@@ -1,0 +1,4 @@
+load_checkpoint: True
+loader:
+  _target_: olympus_core.loaders.checkpoint_loader.OlympusDeepspeedCheckpointLoader
+  strict: True

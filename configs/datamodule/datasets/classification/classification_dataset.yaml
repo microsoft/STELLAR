@@ -1,0 +1,9 @@
+_target_: olympus_core.core.ModuleDatasets    
+train:
+  _target_: src.datasets.classification_dataset.ClassificationDataset
+  _partial_: True
+  root: "${mounts.external}/ImageData"
+test:
+  - _target_: src.datasets.classification_dataset.ClassificationDataset
+    _partial_: True
+    root: "${mounts.external}/ImageData"

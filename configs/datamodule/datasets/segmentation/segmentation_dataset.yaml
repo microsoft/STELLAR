@@ -1,0 +1,18 @@
+_target_: olympus_core.core.ModuleDatasets    
+train:
+  _target_: src.datasets.segmentation_dataset.SegmentationDataset
+  _partial_: True
+  root: "${mounts.external}/ImageData"
+  name: VOCSegmentation
+  crop_scale: 0.5
+  split: "train"
+  pretraining: False
+  resolution: 224
+test:
+  - _target_: src.datasets.segmentation_dataset.SegmentationDataset
+    _partial_: True
+    root: "${mounts.external}/ImageData"
+    name: VOCSegmentation
+    split: "test"
+    pretraining: False
+    resolution: 224

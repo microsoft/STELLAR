@@ -1,0 +1,3 @@
+_target_: olympus_core.optimizers.TorchOptimizer
+opt_class: torch.optim.Adam
+lr: 0.001

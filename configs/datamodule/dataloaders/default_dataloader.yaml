@@ -1,0 +1,22 @@
+_target_: olympus_core.core.ModuleDataLoaders
+train:
+  _target_: torch.utils.data.DataLoader
+  _partial_: True
+  batch_size: 1
+  num_workers: 8
+  shuffle: True
+  pin_memory: True           # accelerates host→device transfers
+  prefetch_factor: 2         # number of batches to prefetch per worker
+validate:
+  _target_: torch.utils.data.DataLoader
+  _partial_: True
+  batch_size: 1
+  num_workers: 8
+test:
+  _target_: torch.utils.data.DataLoader
+  _partial_: True
+  batch_size: 1
+  num_workers: 4
+  pin_memory: False
+  persistent_workers: False
+  timeout: 0

@@ -1,0 +1,14 @@
+_target_: olympus_core.core.ModuleDatasets    
+train:
+  _target_: torch.utils.data.ConcatDataset
+  _partial_: True
+  datasets:
+    - _target_: src.datasets.imagenet_dataset.ImageNetKaggle
+      root: "${mounts.external}/ImageData/ImageNet"
+test:
+  # _target_: torch.utils.data.ConcatDataset
+  # datasets:
+  - _target_: src.datasets.imagenet_dataset.ImageNetKaggle
+    _partial_: True
+    root: "${mounts.external}/ImageData/ImageNet"
+    split: "val"

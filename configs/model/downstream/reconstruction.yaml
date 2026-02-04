@@ -1,0 +1,3 @@
+_target_: src.models.downstream.reconstruction.ReconstructionProbing
+freeze_model: True
+feature_dim: 768

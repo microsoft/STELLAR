@@ -1,0 +1,77 @@
+defaults:
+  - model/stellar@model: stellar_model
+  - datamodule: imagenet_datamodule
+  - trainer: stellar_trainer
+  - evaluator: stellar_evaluator
+  - loss: stellar_loss
+  - optimizer: adamw
+  - olympus_checkpoint: stellar_checkpoint_loader
+  - _self_
+
+# Definitions sub-configs rely on. These will only work if running from amlt, override
+# on command line otherwise
+mounts:
+  external: ${oc.env:EXTERNAL}
+  output: ${oc.env:OUTPUT}
+project_name: stellar
+experiment_name: ${oc.env:AMLT_EXPERIMENT_NAME}
+job_name: ${oc.env:AMLT_JOB_NAME}
+experiment_output_dir: ${mounts.output}/${project_name}/${job_name}
+
+datamodule:
+  dataloaders:
+    train:
+      batch_size: 128
+    validate:
+      batch_size: 128
+    test:
+      batch_size: 128
+
+trainer:
+  max_epochs: 150
+  gradient_clip_val: 3.0
+
+optimizer:
+  lr: 0.00015
+  weight_decay: 0.04
+
+model:
+  num_sparse_tokens: 16
+  spatial_temp: 0.06
+  do_koleo: True
+  do_recon: True
+  num_decoder_layers: 6
+  vq_model: "${mounts.external}/PretrainedModels/vqgan/maskgit/maskgit-vqgan-imagenet-f16-256.bin"
+  do_cls: True
+  momentum_teacher: False
+  teacher_momentum: 0.996
+  # clustering
+  do_clustering: True
+  num_clusters: 16384
+  predictor_layers: 2
+  prototype_dim: 256
+  # masked view augmentation
+  do_masking: True
+  num_masks: 8
+  masking_ratio: 0.8
+  focal_mode: "gaussian"
+  do_cropping: True
+  num_local_crops: 8
+  color_augmentation: True
+  # contrastive predictor
+  hungarian_match: True
+  vit_pretrained: "facebook/vit-mae-base"
+  
+loss:
+  reg_coeff: 1.0
+
+evaluator:
+  save_name: "${mounts.external}/ImageData/ImageNet/output/${job_name}"
+
+olympus_checkpoint:
+  load_checkpoint: False
+  loader:
+    checkpoint_path: "${mounts.external}/PretrainedModels/stellar/STELLAR-B16.ckpt"
+    strict: False
+
+mode: "train"

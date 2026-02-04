@@ -1,0 +1,5 @@
+_target_: src.models.downstream.classification.ClassificationProbing
+num_classes: 1000
+freeze_model: True
+feature_key: sparse
+feature_dim: 768

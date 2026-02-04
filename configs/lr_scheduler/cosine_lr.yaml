@@ -1,0 +1,4 @@
+_target_: olympus_core.optimizers.TorchSchedulerFactory
+scheduler_name: "cosine"
+warmup_ratio: 0.1          
+eta_min: 1.0e-6             # non-zero floor

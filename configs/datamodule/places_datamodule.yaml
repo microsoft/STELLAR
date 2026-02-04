@@ -1,0 +1,7 @@
+defaults:
+  - datasets/classification@datasets: places_dataset
+  - dataloaders: default_dataloader
+  - _self_
+_target_: olympus_core.core.OlympusDataModule
+split_train_validate: True
+validate_split_ratio: 0.1

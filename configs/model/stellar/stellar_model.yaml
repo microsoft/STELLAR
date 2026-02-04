@@ -1,0 +1,2 @@
+_target_: src.models.stellar.stellar_model.STELLARModel
+num_sparse_tokens: 16

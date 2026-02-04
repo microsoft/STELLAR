@@ -1,0 +1,65 @@
+defaults:
+  - model/downstream@model: reconstruction_stellar
+  - datamodule: imagenet_datamodule
+  - trainer: stellar_trainer
+  - evaluator: stellar_evaluator
+  - loss: stellar_loss
+  - optimizer: adamw
+  - olympus_checkpoint: stellar_checkpoint_loader
+  - _self_
+
+# Definitions sub-configs rely on. These will only work if running from amlt, override
+# on command line otherwise
+mounts:
+  external: ${oc.env:EXTERNAL}
+  output: ${oc.env:OUTPUT}
+project_name: stellar
+experiment_name: ${oc.env:AMLT_EXPERIMENT_NAME}
+job_name: ${oc.env:AMLT_JOB_NAME}
+experiment_output_dir: ${mounts.output}/${project_name}/${job_name}
+
+datamodule:
+  dataloaders:
+    train:
+      batch_size: 128
+    validate:
+      batch_size: 128
+    test:
+      batch_size: 128
+optimizer:
+  lr: 0.0001
+ 
+model:
+  freeze_model: True
+  feature_key: lowrank
+  feature_dim: 768
+  is_baseline: False
+  vq_model: "${mounts.external}/PretrainedModels/vqgan/maskgit/maskgit-vqgan-imagenet-f16-256.bin"
+  model:
+    # _target_: src.models.baseline_model.baseline_model.BaselineDINO
+    # model_name: dino-vitb16
+    # ckpt_root: "${mounts.external}/PretrainedModels/vision_models"
+    _target_: src.models.stellar.stellar_model.STELLARModel
+    num_sparse_tokens: 16
+    num_decoder_layers: 6
+    spatial_temp: 0.06
+    do_clustering: True
+    do_recon: True
+    momentum_teacher: False
+    teacher_momentum: 0.996
+    do_cls: True
+    num_clusters: 16384
+    predictor_layers: 2
+    prototype_dim: 256
+    vit_pretrained: "facebook/vit-mae-base"
+    vq_model: "${mounts.external}/PretrainedModels/vqgan/maskgit/maskgit-vqgan-imagenet-f16-256.bin"
+  model_checkpoint: "${mounts.external}/PretrainedModels/stellar/STELLAR-B16.ckpt"
+ 
+trainer:
+  max_epochs: 20
+  enable_checkpointing: True  # Disable automatic checkpointing to save disk space
+  
+evaluator:
+  save_name: "${mounts.external}/ImageData/ImageNet/output/${job_name}"
+
+mode: "train"

@@ -1,0 +1,2 @@
+_target_: src.losses.stellar_loss.STELLAR_Loss
+reg_coeff: 1.0

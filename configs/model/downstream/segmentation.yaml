@@ -1,0 +1,4 @@
+_target_: src.downstream.segmentation.SegmentationProbing
+num_classes: 150
+freeze_model: False
+freeze_backbone: True

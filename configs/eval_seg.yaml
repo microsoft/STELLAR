@@ -1,0 +1,71 @@
+defaults:
+  - model/downstream@model: segmentation
+  - datamodule: ade20k_datamodule #segmentation_datamodule # ade20k_datamodule #
+  - trainer: stellar_trainer
+  - evaluator: segmentation_evaluator
+  - loss: segmentation_loss
+  - optimizer: adamw
+  - olympus_checkpoint: stellar_checkpoint_loader
+  - _self_
+
+# Definitions sub-configs rely on. These will only work if running from amlt, override
+# on command line otherwise
+mounts:
+  external: ${oc.env:EXTERNAL}
+  output: ${oc.env:OUTPUT}
+project_name: stellar
+experiment_name: ${oc.env:AMLT_EXPERIMENT_NAME}
+job_name: ${oc.env:AMLT_JOB_NAME}
+experiment_output_dir: ${mounts.output}/${project_name}/${job_name}
+
+datamodule:
+  split_train_validate: True
+  validate_split_ratio: 0.1
+  dataloaders:
+    train:
+      batch_size: 2048
+    test:
+      batch_size: 2048
+
+optimizer:
+  lr: 0.0001
+
+model:
+  num_classes: 150
+  freeze_model: False
+  freeze_backbone: True
+  _target_: src.models.stellar.tasks.segmentation.SegmentationProbing
+  feature_key: dense
+  feature_dim: 768
+  is_baseline: False
+  model_backbone:
+########### Baseline #################
+    # _target_: src.models.baseline_model.baseline_model.BaselineMAE
+    # model_name: mae-base
+    # ckpt_root: "${mounts.external}/PretrainedModels/vision_models"
+########### STELLAR ##################
+    _target_: src.models.stellar.stellar_model.STELLARModel
+    num_sparse_tokens: 16
+    num_decoder_layers: 6
+    vq_model: "${mounts.external}/PretrainedModels/vqgan/maskgit/maskgit-vqgan-imagenet-f16-256.bin"
+    do_cls: True
+    do_recon: True
+    momentum_teacher: False
+    teacher_momentum: 0.996
+    do_clustering: True
+    num_clusters: 16384
+    predictor_layers: 2
+    prototype_dim: 256
+    vit_pretrained: "facebook/vit-mae-base"
+    model_checkpoint_path: "${mounts.external}/PretrainedModels/STELLAR-B16.ckpt"
+
+trainer:
+  max_epochs: 80
+  enable_checkpointing: False  # Disable automatic checkpointing to save disk space
+
+evaluator:
+  use_probe: False
+  classifier_type: knn    # knn, logreg
+  feature_key: dense
+
+mode: "train"

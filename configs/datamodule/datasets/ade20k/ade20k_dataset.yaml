@@ -1,0 +1,17 @@
+_target_: olympus_core.core.ModuleDatasets    
+train:
+  _target_: torch.utils.data.ConcatDataset
+  _partial_: True
+  datasets:
+    - _target_: src.datasets.ade20k_dataset.ADE20KSegmentationDataset
+      root_dir: "${mounts.external}/ImageData/ADEChallengeData2016"
+      split: "training"
+      pretraining: False
+      aug_input: False
+test:
+  - _target_: src.datasets.ade20k_dataset.ADE20KSegmentationDataset
+    _partial_: True
+    root_dir: "${mounts.external}/ImageData/ADEChallengeData2016"
+    split: "validation"
+    pretraining: False
+    aug_input: False

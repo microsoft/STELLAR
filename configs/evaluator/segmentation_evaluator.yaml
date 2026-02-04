@@ -1,0 +1,3 @@
+_target_: src.evaluators.segmentation_evaluator.SegmentationEvaluator
+use_probe: True
+feature_key: "features"

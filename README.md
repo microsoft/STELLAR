@@ -4,6 +4,27 @@
 
 This repository hosts the code and resources for **STELLAR**, aka "Learning Sparse Visual Representations via Spatial-Semantic Factorization". **STELLAR** is produce unified sparse vision representation supporting both **reconstruction** (2.60 FID) and **semantics** (79.10% linear probing accuracy), with 90% reduction in the latent size compared to dense grid (only 16 tokens). By factorizing "what" from "where", STELLAR effectively models the multiple semantic concepts in an image along with their spatial localization, enabling efficient, holistic vision representation.
 
+## How it Works
+
+STELLAR learns a factorized latent representation. By doing so it effectively learns the "semantic" part disentangled from the "spatial" part, allowing the joint learning of reconstruction and semantics. Below we compare different types of SSL methods.
+
+<img src="images/Method_compare.png" alt="Alternative Text" width="500">
+
+## Unified Representation
+The latent representation learned from STELLAR can serve both high-level semantics and image reconstruction. Below we show the reconstruction potention by training a light-weight 6-layer ViT decoder on top of frozen features (* TiTok used its own larger ViT decoder). We probe the semantic quality with linear probing and kNN. 
+
+| | | Reconstruction | | Semantics | |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Model** | **# tokens** | **FID ↓** | **LPIPS ↓** | **Lin.** | **kNN** |
+| DINO | 1 | - | - | 76.46 | 74.69 |
+| DINO | 196 | 3.27 | 0.2121 | 70.31 | 54.41 |
+| MAE | 196 | 3.02 | **0.2071** | 66.32 | 25.82 |
+| TiTok* | 32 | 2.75 | 0.3281 | 33.42 | 7.30 |
+| TiTok* | 64 | 1.99 | 0.2571 | 32.87 | 7.29 |
+| **STELLAR** | **16** | **3.06** | **0.2077** | **73.26** | **67.25** |
+| **STELLAR** | **196** | **2.85** | **0.2085** | **72.21** | **64.71** |
+| **STELLAR (H)** | **16** | **2.60** | **0.1729** | **79.10** | **77.31** |
+
 
 ## Installation
 ```sh

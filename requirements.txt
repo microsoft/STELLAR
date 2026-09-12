@@ -11,7 +11,7 @@ datasets
 taming-transformers
 mup
 lightning
-marshmallow==3.20.2
+marshmallow==3.26.2
 setuptools
 packaging
 python-dotenv
